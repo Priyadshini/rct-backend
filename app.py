@@ -8,7 +8,6 @@ def create_app():
     app = FastAPI(title="RCT system api",
               description="Rest api",
               version="0.1.0",
-              openapi_url="",
               docs_url="/docs",  # swagger UI
               redoc_url="/redoc")  # ReDoc
 
@@ -16,6 +15,5 @@ def create_app():
     app.include_router(routes.router)
     return app
 
-if __name__ == "__main__":
-    app = create_app()
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+app = create_app()
+
