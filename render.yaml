@@ -2,7 +2,7 @@ services:
   - type: web_service
     name: rct-backend
     env: docker
-    repo: Priyadshini/rct-backend
+    repo: rct-backend
     branch: release/v1.0.0
     dockerfilePath: Dockerfile
     buildCommand: ""
