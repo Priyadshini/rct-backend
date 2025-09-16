@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from src.database.db import Base, engine
 from src.router import routes
+import uvicorn
+
 
 def create_app():
     app = FastAPI(title="RCT system api",
@@ -11,11 +13,9 @@ def create_app():
               redoc_url="/redoc")  # ReDoc
 
     Base.metadata.create_all(bind=engine)
-    app.include_router(routes)
+    app.include_router(routes.router)
     return app
 
-app = create_app()
-
 if __name__ == "__main__":
-    import uvicorn
+    app = create_app()
     uvicorn.run(app, host="0.0.0.0", port=8000)
