@@ -1,0 +1,44 @@
+{
+    "Legal_Regulatory_Terms_NER": [
+        {
+            "term": "Basel III",
+            "definition": "Global regulatory framework for banks to strengthen regulation, supervision, and risk management."
+        },
+        {
+            "term": "Capital Conservation Buffer",
+            "definition": "Extra capital banks must hold above minimum requirements to absorb losses during stress."
+        },
+        {
+            "term": "Countercyclical Buffer",
+            "definition": "Variable capital buffer to protect banking sector during periods of excess credit growth."
+        },
+        {
+            "term": "Liquidity Coverage Ratio (LCR)",
+            "definition": "Ensures banks hold enough high-quality liquid assets to survive a 30-day stress scenario."
+        },
+        {
+            "term": "Net Stable Funding Ratio (NSFR)",
+            "definition": "Promotes stable funding over a one-year horizon to reduce funding risk."
+        },
+        {
+            "term": "Tier 1 / Tier 2 Capital",
+            "definition": "Measures of a bank’s financial strength. Tier 1 is core capital; Tier 2 includes subordinated instruments."
+        },
+        {
+            "term": "Common Equity Tier 1 (CET1)",
+            "definition": "Highest quality capital, including common shares and retained earnings."
+        },
+        {
+            "term": "Credit Valuation Adjustment (CVA)",
+            "definition": "Adjustment to the fair value of derivatives to account for counterparty credit risk."
+        },
+        {
+            "term": "Leverage Ratio",
+            "definition": "Non-risk-based measure to restrict excessive leverage in the banking system."
+        },
+        {
+            "term": "Risk-Weighted Assets (RWA)",
+            "definition": "Assets weighted by risk to determine minimum capital requirements."
+        }
+    ]
+}

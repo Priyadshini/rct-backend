@@ -1,0 +1,4 @@
+{
+  "entity": "<NER term>",
+  "prompt": "Generate a user story, acceptance criteria, and test case for <NER term> in the context of Basel III compliance."
+}
