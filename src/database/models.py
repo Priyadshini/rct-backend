@@ -4,10 +4,6 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
-class Role(BaseModel):
-    role: str
-    description: Optional[str] = None
-
 
 class Document(BaseModel):
     id: int
@@ -25,7 +21,7 @@ class Clause(BaseModel):
     text: str
     page_no: int
 
-class Obligations(BaseModel):
+class Obligation(BaseModel):
     id: int
     clause_id: int
     text: str
