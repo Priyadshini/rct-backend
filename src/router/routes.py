@@ -12,6 +12,7 @@ from fastapi import Query
 load_dotenv()
 
 router = APIRouter(prefix="/rct")
+UPLOAD_DIR = "resources/data"
 
 @router.get("/health")
 def health_check():
@@ -21,7 +22,7 @@ def health_check():
 @router.post("/documents/upload")
 async def upload_documents(file: UploadFile = File(...)):
     user_id = 112223  # Placeholder for user identification logic
-    file_path = os.path.join(os.getcwd(),os.getenv("UPLOAD_DIR"), datetime.now().strftime("%Y/%m/%d"))
+    file_path = os.path.join(os.getcwd(),UPLOAD_DIR)
     saved_path = save_file(file_path, file)
     doc_id = DocumentRepository.create_document(name=file.filename, uploader_id=user_id, file_path=saved_path)
     AuditLogRepository.create_audit_log(user_id=user_id, action="UPLOAD", target_type="document", target_id=doc_id,details=f"Uploaded file to {saved_path}")
