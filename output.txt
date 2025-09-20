@@ -1,0 +1,124 @@
+Type: USER_STORY
+Confidence: 0.7
+Text: **User Story:** As a bank, I want to comply with the Basel III framework so that I can maintain a resilient banking system and avoid penalties.
+
+**Acceptance Criteria:**
+
+* The bank's capital adequacy ratio meets or exceeds the minimum requirements specified in Basel III, including Common Equity Tier 1 (CET1), Tier 1 capital, and total capital ratios, considering the capital conservation buffer and any applicable countercyclical buffer.  The leverage ratio also meets or exceeds the minimum requirements.
+* The bank's liquidity risk profile complies with the Liquidity Coverage Ratio (LCR) and Net Stable Funding Ratio (NSFR) standards.
+* The bank implements appropriate risk coverage measures for counterparty credit risk, including the treatment of credit valuation adjustment (CVA) risk and wrong-way risk, as outlined in Basel III.
+* The bank's internal systems and processes for calculating and reporting capital and liquidity ratios are validated and regularly audited to ensure accuracy and compliance.
+* The bank adheres to the transitional arrangements outlined in Basel III for phasing in new requirements, including capital deductions and the phase-out of non-qualifying capital instruments.
+* The bank's capital planning process includes consideration of the capital conservation buffer and countercyclical buffer, and it incorporates appropriate strategies for maintaining adequate capital levels during periods of stress.  Distributions align with the conservation requirements.
+* All required disclosures regarding capital and liquidity are made according to the Basel III guidelines.  The bank’s systems ensure accurate and timely reporting.
+
+**Test Case:**
+
+A comprehensive test plan should be developed to validate compliance with all aspects of Basel III. This would include the following types of tests:
+
+* **Data Integrity Tests:**  Verify the accuracy and completeness of data used in the calculation of capital and liquidity ratios. This includes testing data sources, transformation processes, and reconciliation procedures.
+
+* **Ratio Calculation Tests:**  Validate the accuracy of the calculated CET1 ratio, Tier 1 capital ratio, total capital ratio, LCR, and NSFR, using various scenarios and data sets, including stressed conditions. Ensure that all formulas and calculations conform to Basel III specifications.
+
+* **Stress Testing:** Assess the bank's ability to withstand various economic and market shocks, demonstrating sufficient capital and liquidity buffers. This would involve utilizing various stress scenarios and evaluating the impact on capital adequacy ratios and liquidity ratios.
+
+* **Transitional Arrangement Tests:** Verify that the bank's systems and processes correctly implement the phase-in arrangements for new requirements, including the gradual introduction of capital conservation buffer, countercyclical buffer, and changes to deductions/risk weighting.
+
+* **Disclosure Tests:**  Confirm that all required disclosures are being generated accurately, completely, and timely, following specified formats and timelines.
+
+* **Counterparty Credit Risk Tests:** Verify the accuracy of the bank's calculation of counterparty credit risk capital charges, including CVA charges and the treatment of wrong-way risk and collateralization scenarios. The tests will include a review of the bank’s methods for identifying and managing these risks, as well as the adequacy of the applied risk weightings.
+
+* **Leverage Ratio Tests:**  Confirm the correct calculation of the leverage ratio, ensuring consistency in the treatment of capital and exposure measures across various asset classes and instruments.  The calculation should follow the methodology detailed in Basel III.
+
+The test plan should include both positive and negative testing (i.e., testing for both correct and incorrect inputs and scenarios) to ensure comprehensive coverage.  Results of all tests need to be documented, and any failures need to be investigated and resolved before the bank declares compliance.  Regular audits, both internal and external, will be crucial to maintaining ongoing compliance.
+
+Type: USER_STORY
+Confidence: 0.7
+Text: **User Story:** As a banking regulator, I want banks to maintain adequate capital buffers above the minimum regulatory requirements to withstand unexpected losses, so that the financial system remains stable and resilient during economic downturns.
+
+
+**Acceptance Criteria:**
+
+* A capital conservation buffer of 2.5% of risk-weighted assets (RWAs), comprised of Common Equity Tier 1 (CET1) capital, is established above the minimum capital requirements.
+*  Distribution constraints are imposed on banks when their CET1 capital ratios fall below 7% (minimum requirement + conservation buffer).
+* The distribution constraints increase as the bank's capital ratio approaches the minimum requirement, ranging from 100% earnings retention at the lowest level to 0% at 7%.
+* Earnings are defined as distributable profits calculated before distributions but after tax adjustments reflecting those distributions.
+* The framework applies at the consolidated level, but national supervisors have the discretion to apply it at the solo level.
+* The capital conservation buffer is phased in between 1 January 2016 and 1 January 2019, reaching its final level of 2.5% of RWAs.
+* The framework includes clear definitions of distributions (dividends, share buybacks, discretionary bonuses) and earnings.  Supervisors have additional discretion to impose time limits on banks operating within the buffer range to prevent abuse.
+
+
+**Test Case:**
+
+1. **Scenario:** A bank has a CET1 ratio of 5.5% at the end of a financial year. Its distributable profits before any distributions are €10 million.  
+2. **Test:** Calculate the maximum allowed distribution according to the Basel III Capital Conservation Buffer.
+3. **Expected Result:** Based on the table provided in the document, a CET1 ratio between 5.125% and 5.75% requires an 80% capital conservation ratio. Therefore, the maximum allowed distribution is €2 million (20% of €10 million).  The bank must retain €8 million.
+4. **Pass/Fail:** The test passes if the calculated maximum distribution matches the expected result based on the defined rules and thresholds.  If the calculation results in a different distribution amount or violates the stipulated percentage, the test fails.
+5. **Additional Tests:** Repeat this test with various CET1 ratios (below 5.125%, between 5.75% and 7%, above 7%) to verify the accuracy of the framework across the entire range of capital levels.  Include scenarios with negative earnings to validate the handling of such situations under the constraint. Include scenarios with and without countercyclical buffer to test the interactions between the two.
+
+Type: USER_STORY
+Confidence: 0.7
+Text: **User Story:** As a banking regulator, I want banks to maintain a countercyclical capital buffer to mitigate systemic risk during periods of excessive credit growth, so that the financial system is more resilient to economic downturns.
+
+
+**Acceptance Criteria:**
+
+* The countercyclical buffer requirement is defined as a percentage of risk-weighted assets (RWAs), ranging from 0% to 2.5%,  adjustable based on assessments of excess credit growth and systemic risk.
+* National authorities are responsible for determining the countercyclical buffer level for their jurisdictions, considering credit growth indicators and other relevant factors as outlined in the provided document.
+* The countercyclical buffer for internationally active banks is calculated as a weighted average of the buffer requirements across all jurisdictions where they have significant credit exposures.
+* A pre-announcement period (up to 12 months) is provided before increases in the countercyclical buffer, with immediate effect given to decreases.
+* The countercyclical buffer requirement extends the capital conservation buffer, and banks failing to meet it are subject to distribution restrictions.
+* The frequency of countercyclical buffer calculation and public disclosure is at least the same as for minimum capital requirements. Geographic breakdown of credit exposures is also disclosed.
+* A phased-in implementation schedule is in place (as detailed in the document), with the full 2.5% maximum buffer effective by January 1, 2019.  Jurisdictions experiencing excessive credit growth may accelerate implementation.
+* The guidance document for national authorities on countercyclical buffer decisions is referenced and considered.
+
+
+**Test Case:**
+
+**Test Scenario:**  A multinational bank, Bank X, has significant credit exposures across three jurisdictions: Country A (20% of total credit risk-weighted assets), Country B (50%), and Country C (30%).
+
+**Steps:**
+
+1. **Country-Specific Buffer Levels:** Assume Country A sets a 1% countercyclical buffer, Country B sets a 0% buffer, and Country C sets a 2% buffer.
+
+2. **Weighted Average Calculation:**  Bank X's countercyclical buffer is calculated as a weighted average: (0.20 * 1%) + (0.50 * 0%) + (0.30 * 2%) = 0.8% of RWAs.
+
+3. **Buffer Application:** Bank X must hold an additional 0.8% of its RWAs in Common Equity Tier 1 capital to meet the countercyclical buffer requirement.  This is added to the capital conservation buffer.
+
+4. **Distribution Restrictions:** If Bank X's Common Equity Tier 1 ratio, inclusive of the countercyclical and conservation buffer, falls below 7%, it will be subject to the distribution constraints outlined in the document (e.g., 100%, 80%, 60%, or 40% earnings retention).
+
+5. **Reporting:** Bank X must report its 0.8% countercyclical buffer requirement publicly, along with the geographic breakdown of its credit exposures (Country A: 1%, Country B: 0%, Country C: 2%).
+
+**Expected Result:**  Bank X's countercyclical buffer is correctly calculated and reported, and its distribution constraints are applied appropriately based on its combined capital conservation and countercyclical buffer ratio.  The reporting includes the geographic breakdown.  Any deviation from the expected result indicates a failure in the implementation or calculation of the countercyclical buffer.
+
+Type: USER_STORY
+Confidence: 0.7
+Text: **User Story:** As a bank, I want to comply with the Basel III Liquidity Coverage Ratio (LCR) regulations so that I can maintain sufficient high-quality liquid assets to withstand short-term liquidity stress.
+
+**Acceptance Criteria:**
+
+* The bank has implemented a system to calculate the LCR on a regular basis (at least monthly) using the methodology specified in Basel III (paragraphs 40-41).
+* The calculated LCR meets or exceeds the minimum regulatory requirement of 100% as of January 1, 2015.
+* The bank maintains accurate records of all high-quality liquid assets (HQLA) and net cash outflows used in the LCR calculation.
+* The bank has developed and documented a process for managing liquidity risks, aligning with the principles for sound liquidity risk management and supervision as outlined by the Basel Committee (paragraph 36).
+* The bank’s internal controls ensure accurate data reporting and timely identification of potential liquidity shortfalls.
+* The bank successfully undergoes supervisory reviews demonstrating compliance with the LCR requirements and associated reporting guidelines (paragraphs 43-45).
+
+**Test Case:**
+
+1. **Data Preparation:**  Gather data for all the bank's assets and liabilities, classifying them appropriately according to Basel III guidelines on HQLA and net cash outflows.  This should include various types of assets (e.g., cash, government bonds, high-quality corporate bonds, etc.) and liabilities (e.g., deposits, wholesale funding, etc.) reflecting a 30-day horizon.
+
+2. **LCR Calculation:** Implement the LCR calculation according to Basel III’s formula (paragraphs 40-41), which involves calculating the ratio of HQLA to total net cash outflows under a specified stress scenario.  The calculation should incorporate the weights and haircuts specified in the Basel III framework for different types of assets.
+
+3. **Stress Scenario:** The stress scenario (paragraph 40) must be used to estimate net cash outflows over the 30-day period, considering factors such as rating downgrades, deposit withdrawals, wholesale funding losses, collateral haircuts, and derivative collateral calls.
+
+4. **Result Validation:** Verify that the calculated LCR meets or exceeds the minimum regulatory requirement of 100%. Document the calculation process and results, including all assumptions and data sources. Compare results to an independent calculation done using a separate system or methodology.
+
+5. **Reporting:** Check that the bank’s reporting mechanisms are able to generate reports which meet supervisory requirements.  These reports should clearly present the LCR, the components of the LCR calculation and a clear explanation of any issues or deviations.
+
+
+6. **Scenario Testing:** Conduct additional stress tests utilizing different stress scenarios than the standardized one, to assess the robustness of the bank's liquidity position under various market conditions.  Ensure that the bank’s risk management processes adequately address the results of these tests.
+
+
+================================================================================
+

@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from fastapi import FastAPI, APIRouter, UploadFile, File
 from src.database.db import Base, engine
 import os
@@ -9,6 +10,8 @@ from typing import Optional
 from fastapi import Query
 from src.services.rct.user_story import *
 from src.services.rct.compliance_req import *
+from src.utils.helper import *
+import json
 
 
 load_dotenv()
@@ -38,25 +41,25 @@ def get_all_documents(doc_id: Optional[int] = None):
         document = DocumentRepository.get_document_by_id(doc_id)
         if document is None:
             return {"error": f"Document with id {doc_id} not found"}, 404
-        return {"id": document.id, "name": document.name, "upload_ts": document.upload_ts, "uploader_id": document.uploader_id, "file_path": document.file_path, "version": document.version}
+        return asdict(document)
     else:
         documents = DocumentRepository.get_documents()
-        file_list = [{"id": doc.id, "name": doc.name, "upload_ts": doc.upload_ts, "uploader_id": doc.uploader_id, "file_path": doc.file_path, "version": doc.version} for doc in documents]
-        return {"files": file_list}
+        return  asdict(documents)
     
 
 @router.get("/audit-logs")
 def get_audit_logs(skip: int = Query(0, ge=0), limit: int = Query(100, ge=1)):
     logs = AuditLogRepository.get_audit_logs(skip=skip, limit=limit)
-    log_list = [{"id": log.id, "user_id": log.user_id, "action": log.action, "target_type": log.target_type, "target_id": log.target_id, "ts": log.ts, "details": log.details} for log in logs]
-    return {"audit_logs": log_list}
+    return asdict(logs)
+
 
 @router.get("/audit-logs/{log_id}")
 def get_audit_log_by_id(log_id: int):    
     log = AuditLogRepository.get_audit_log_by_id(log_id)
     if log is None:
         return {"error": f"Audit log with id {log_id} not found"}, 404
-    return {"id": log.id, "user_id": log.user_id, "action": log.action, "target_type": log.target_type, "target_id": log.target_id, "ts": log.ts, "details": log.details}
+    return asdict(log)
+
 
 @router.post("/requirements/extract/{doc_id}")
 def extract_requirements(doc_id: int):
@@ -64,18 +67,38 @@ def extract_requirements(doc_id: int):
     document = DocumentRepository.get_document_by_id(doc_id)
     if document is None:
         return {"error": f"Document with id {doc_id} not found"}, 404
-    print(document.file_path)
+
     clauses = extract_compliance_req_from_document(document.file_path)
-    print(clauses)
-    # return {"clauses": clauses}
+    ner_json = read_json(r"tryouts\ner1.json")
+
+    stories_output = []
     for clause in clauses:
-        stories = extract_user_story_from_clause(clause)
-        print(stories)
-    # #
-    AuditLogRepository.create_audit_log(user_id=user_id, action="EXTRACT_REQUIREMENTS", target_type="document", target_id=doc_id, details=f"Extracted {len(clauses)} clauses and their obligations from document id {doc_id}")
-    return {"Message": f"Extracted {len(clauses)} clauses and their obligations from document id {doc_id}"}
+        stories = extract_user_story_from_clause(clause, ner_json)
+        stories_output.append([{
+            "type": story["type"],
+            "confidence": story["confidence"],
+            "text": story["text"]
+        } for story in stories])
 
+    # save stories in file
+    output_dir = os.path.join(os.getcwd(), "output")
+    os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, f"stories_doc_{doc_id}.json")
+    save_json(output_file, stories_output)
 
+    AuditLogRepository.create_audit_log(
+        user_id=user_id,
+        action="EXTRACT_REQUIREMENTS",
+        target_type="document",
+        target_id=doc_id,
+        details=f"Extracted {len(clauses)} clauses and their obligations from document id {doc_id} and saved to {output_file}"
+    )
+    return {
+        "message": f"Extracted {len(clauses)} clauses and their obligations from document id {doc_id}",
+        "clauses_extracted": len(clauses),
+        "stories": stories_output,
+        "output_file": output_file
+    }
 
 
     
