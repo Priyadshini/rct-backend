@@ -1,13 +1,10 @@
-import uuid
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import Column, Integer, String, DateTime, Enum, Float
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
 from .db import Base, connect_db
-from .models import *
 from sqlalchemy import ForeignKey
 
 db = next(connect_db())
@@ -22,7 +19,7 @@ class AuditLog(Base):
     action = Column(String(100), nullable=False)
     target_type = Column(String(50), nullable=False)
     target_id = Column(Integer, nullable=True)
-    ts = Column(DateTime, default=datetime.now)
+    ts = Column(DateTime, default=datetime.now())
     details = Column(String(500), nullable=True)
 
 class Document(Base):
@@ -31,54 +28,57 @@ class Document(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
+    doc_type = Column(String(255), nullable=True)
     upload_ts = Column(DateTime, default=datetime.now())
     uploader_id = Column(Integer, nullable=False)
     file_path = Column(String(500), nullable=False)
     version = Column(Integer, nullable=True)
 
-class Clause(Base):
+class ComplianceRequirements(Base):
     """clauses table definition"""
-    __tablename__ = "clauses"
+    __tablename__ = "compliance_requirements"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
-    clause_seq = Column(Integer, nullable=False)
-    # clause_id = Column(Integer, autoincrement=True, unique=True, nullable=False)
+    doc_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    section_ref = Column(Integer, nullable=False)
     text = Column(String, nullable=False)
-    page_no = Column(Integer, nullable=False)
+    category = Column(String(355), nullable=True)
+    priority = Column(Integer, nullable=True)
+    created_ts = Column(DateTime, default=datetime.now())
+    
 
-class Obligations(Base):
+class UserStories(Base):
     """obligations table definition"""
-    __tablename__ = "obligations"
+    __tablename__ = "user_stories"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    clause_id = Column(Integer, ForeignKey("clauses.id"), nullable=False)
-    text = Column(String, nullable=False)
-    type = Column(String(50), nullable=False)
-    confidence = Column(Float, nullable=False)
-    status = Column(String(50), nullable=False)
+    doc_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    requirement_id = Column(Integer, ForeignKey("compliance_requirements.id"), nullable=False)
+    user_story_text = Column(String(255), nullable=False)
+    acceptance_criteria = Column(String(255), nullable=True)
+    created_ts = Column(DateTime, default=datetime.now())
 
-class Artifact(Base):
+class Reports(Base):
     """artifacts table definition"""
-    __tablename__ = "artifacts"
+    __tablename__ = "reports"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    obligation_id = Column(Integer, ForeignKey("obligations.id"), nullable=False)
-    story_text = Column(String, nullable=False)
-    acceptance_criteria = Column(String, nullable=True)
-    status = Column(String(50), nullable=False)
+    doc_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    report_type = Column(String(255), nullable=False)
+    created_ts = Column(DateTime, default=datetime.now())
+    file_path = Column(String(500), nullable=False)
 
 class LLMLog(Base):
     """llm_logs table definition"""
     __tablename__ = "llm_logs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    clause_id = Column(Integer, ForeignKey("clauses.id"), nullable=False)
+    compliance_id = Column(Integer, ForeignKey("compliance_requirements.id"), nullable=False)
     model_name = Column(String(100), nullable=False)
     model_version = Column(String(50), nullable=False)
     prompt = Column(String, nullable=False)
     response = Column(String, nullable=False)
-    ts = Column(DateTime, default=datetime.utcnow)
+    created_ts = Column(DateTime, default=datetime.now())
 
 
 class AuditLogRepository:
