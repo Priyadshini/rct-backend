@@ -67,7 +67,7 @@ def extract_requirements(doc_id: int):
     print(document.file_path)
     clauses = extract_compliance_req_from_document(document.file_path)
     print(clauses)
-    return {"clauses": clauses}
+    # return {"clauses": clauses}
     for clause in clauses:
         stories = extract_user_story_from_clause(clause)
         print(stories)

@@ -1,23 +1,23 @@
-import pytesseract
+# import pytesseract
 import os
-from pdf2image import convert_from_path
+# from pdf2image import convert_from_path
+import fitz  # PyMuPDF
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
 
 def convert_pdf_to_text(file_path: str) -> str:
-    """Convert PDF file to text using OCR."""
-    
-    try:
-        images = convert_from_path(file_path)
+    """
+    """
+    print(file_path)
+    with fitz.open(file_path) as doc:
         text = ""
-        for image in images:
-            text += pytesseract.image_to_string(image)
-        return text
-    except Exception as e:
-        print(f"Error converting PDF to text: {e}")
-        return ""
+        for page in doc:
+            text += page.get_text()
+    print(text)
+    return text
+    
     
 def embed_texts(texts: list, model_name: str = 'all-MiniLM-L6-v2') -> np.ndarray:
     """Embed a list of texts using a pre-trained model."""
