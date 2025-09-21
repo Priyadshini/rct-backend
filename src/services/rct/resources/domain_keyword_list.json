@@ -1,0 +1,68 @@
+{
+  "capital": [
+    "CET1",
+    "Tier 1",
+    "Tier 2",
+    "capital ratio",
+    "capital buffer",
+    "net worth",
+    "own funds",
+    "minimum capital",
+    "prudential capital"
+  ],
+  "liquidity": [
+    "LCR",
+    "NSFR",
+    "liquidity coverage ratio",
+    "net stable funding ratio",
+    "liquid assets",
+    "cash reserve",
+    "liquidity buffer"
+  ],
+  "leverage": [
+    "leverage ratio",
+    "gearing ratio",
+    "debt-to-equity"
+  ],
+  "credit_risk": [
+    "credit exposure",
+    "risk weighted assets",
+    "counterparty risk",
+    "loan loss",
+    "default",
+    "credit rating"
+  ],
+  "market_risk": [
+    "VaR",
+    "value at risk",
+    "stress test",
+    "market volatility",
+    "trading book",
+    "interest rate risk"
+  ],
+  "operational_risk": [
+    "operational risk",
+    "internal controls",
+    "process risk",
+    "fraud risk",
+    "cybersecurity",
+    "business continuity"
+  ],
+  "reporting": [
+    "disclosure",
+    "report",
+    "publication",
+    "filing",
+    "regulatory reporting",
+    "supervisory reporting",
+    "annual return"
+  ],
+  "governance": [
+    "board",
+    "management",
+    "oversight",
+    "compliance officer",
+    "risk committee",
+    "internal audit"
+  ]
+}

@@ -13,7 +13,7 @@ from src.database.db_repository import (
     ReportRepository,
     AuditLogRepository,
 )
-#from src.services.ner_service import run_ner_on_document
+from src.services.rct.ner_service import run_ner_on_document
 #from src.services.llm_service import generate_user_stories_from_requirements
 #from src.services.report_service import generate_report_file
 
