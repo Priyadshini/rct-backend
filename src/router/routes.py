@@ -89,9 +89,7 @@ def extract_requirements(doc_id: int):
         return {"success": False, "error": "Document not found"}
 
     # Run NER on document file
-    #extracted_reqs = run_ner_on_document(doc.file_path)
-    extracted_reqs = ""
-
+    extracted_reqs = run_ner_on_document(doc.file_path)
     for req in extracted_reqs:
         RequirementRepository.create_requirement(
             doc_id=doc_id,
