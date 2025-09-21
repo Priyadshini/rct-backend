@@ -6,9 +6,15 @@ from PyPDF2 import PdfReader
 import docx
 import spacy
 from spacy.matcher import Matcher
+from spacy.lang.en import English
 
 # Load spaCy model (sentence segmentation, tokenization)
 nlp = spacy.load("en_core_web_sm")
+
+
+# Lightweight pipeline for fast sentence splitting
+sent_nlp = English()
+sent_nlp.add_pipe("sentencizer")
 
 BASE_DIR = Path(__file__).resolve().parent  # points to services/rct
 KEYWORDS_FILE = BASE_DIR / "resources" / "domain_keyword_list.json"
@@ -55,54 +61,29 @@ def classify_category(text: str) -> str:
     return "general"
 
 
-def run_ner_on_document(file_path: str) -> List[Dict]:
+def run_ner_on_document(text: str, fast_mode: bool = False):
     """
-    Extract requirement-like sentences from a regulatory document.
-    Uses spaCy sentence segmentation + rule-based matcher + regex.
+    Extract requirement-like sentences from raw text.
+    fast_mode=True uses only sentence splitting + regex (much faster).
     """
-    raw_text = extract_text_from_file(file_path)
-    doc = nlp(raw_text)
-
-    matcher = Matcher(nlp.vocab)
-    # Rule-based requirement patterns
-    patterns = [
-        [{"LOWER": {"IN": ["must", "shall", "should", "required"]}}],
-        [{"LOWER": "is"}, {"LOWER": "required"}, {"LOWER": "to"}],
-        [{"LIKE_NUM": True}, {"TEXT": "%"}],  # percentages like 4.5%
-    ]
-    for i, pattern in enumerate(patterns):
-        matcher.add(f"REQ_PATTERN_{i}", [pattern])
+    doc = sent_nlp(text) if fast_mode else nlp(text)
 
     requirements = []
     counter = 1
 
     for sent in doc.sents:
-        sent_doc = nlp(sent.text)
-        matches = matcher(sent_doc)
+        sent_text = sent.text.strip()
+        if not sent_text:
+            continue
 
-        if matches:
-            text = sent.text.strip()
-
-            # Extract percentages and numbers
-            numbers = re.findall(r"\d+(\.\d+)?%?", text)
-
-            # Category classification
-            category = classify_category(text)
-
-            # Priority assignment
-            if re.search(r"\b(must|shall|required)\b", text, re.I):
-                priority = "high"
-            elif re.search(r"\bshould\b|\brecommended\b", text, re.I):
-                priority = "medium"
-            else:
-                priority = "low"
-
+        # Match requirement-like phrases
+        if re.search(r"\b(must|shall|should|required)\b", sent_text, re.I):
             requirements.append({
                 "section_ref": f"REQ-{counter}",
-                "text": text,
-                "category": category,
-                "priority": priority,
-                "numbers": numbers,
+                "text": sent_text,
+                "category": classify_category(sent_text),
+                "priority": "high",
+                "numbers": re.findall(r"\d+(\.\d+)?%?", sent_text),
             })
             counter += 1
 
