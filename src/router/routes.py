@@ -1,9 +1,11 @@
 import os
+import json
 from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, UploadFile, File
 from dotenv import load_dotenv
+from dataclasses import asdict
 
 from src.utils.helper import save_file
 from src.database.db_repository import (
@@ -13,9 +15,9 @@ from src.database.db_repository import (
     ReportRepository,
     AuditLogRepository,
 )
-#from src.services.ner_service import run_ner_on_document
-#from src.services.llm_service import generate_user_stories_from_requirements
-#from src.services.report_service import generate_report_file
+from src.services.ner_service import *
+from src.services.llm_service import *
+from src.services.report_service import *
 
 load_dotenv()
 
@@ -56,29 +58,10 @@ def get_documents(doc_id: Optional[int] = None):
         doc = DocumentRepository.get_document_by_id(doc_id)
         if not doc:
             return {"error": "Document not found"}
-        return {
-            "doc_id": doc.doc_id,
-            "doc_name": doc.doc_name,
-            "doc_type": doc.doc_type,
-            "upload_date": doc.upload_date,
-            "status": doc.status,
-            "file_path": doc.file_path,
-        }
+        return asdict(doc)
     else:
         docs = DocumentRepository.get_documents()
-        return {
-            "files": [
-                {
-                    "doc_id": d.doc_id,
-                    "doc_name": d.doc_name,
-                    "doc_type": d.doc_type,
-                    "upload_date": d.upload_date,
-                    "status": d.status,
-                    "file_path": d.file_path,
-                }
-                for d in docs
-            ]
-        }
+        return asdict(docs)
 
 
 # ---------------- Requirements ----------------
@@ -88,22 +71,31 @@ def extract_requirements(doc_id: int):
     if not doc:
         return {"success": False, "error": "Document not found"}
 
-    # Run NER on document file
-    #extracted_reqs = run_ner_on_document(doc.file_path)
-    extracted_reqs = ""
+    # # Run NER on document file
+    # extracted_reqs = run_ner_on_document(doc.file_path)
+    
+    # for req in extracted_reqs:
+    #     RequirementRepository.create_requirement(
+    #         doc_id=doc_id,
+    #         section_ref=req.get("section_ref"),
+    #         text=req.get("text"),
+    #         category=req.get("category", "general"),
+    #         priority=req.get("priority", "medium"),
+    #     )
 
-    for req in extracted_reqs:
-        RequirementRepository.create_requirement(
-            doc_id=doc_id,
-            section_ref=req.get("section_ref"),
-            text=req.get("text"),
-            category=req.get("category", "general"),
-            priority=req.get("priority", "medium"),
-        )
+    story_outputs = []
+    ner_json = json.load(open("tryouts/ner1.json"))
+    clauses = fetch_clauses(doc.file_path)
+    for clause in clauses:
+        output_response = extract_user_story_from_clause(clause, ner_json)
+        user_stories = structure_llm_response(output_response)
+        story_outputs.append(user_stories)
 
-    AuditLogRepository.create_audit_log(action=f"Extracted requirements for doc {doc_id}")
+    report_path = generate_user_story_report(doc_id, story_outputs)
+    ReportRepository.create_report(doc_id=doc_id, report_type="TEXT", file_path=report_path)
+    AuditLogRepository.create_audit_log(action=f"Generated Report for doc {doc_id}")
 
-    return {"success": True, "count": len(extracted_reqs)}
+    return {"success": True, "count": len(story_outputs)}
 
 
 @router.get("/requirements/{doc_id}")

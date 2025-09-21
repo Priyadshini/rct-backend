@@ -5,3 +5,12 @@ sqlalchemy
 python-multipart
 python-dotenv
 fastapi[standard]
+langchain 
+langchain-openai
+sentence_transformers 
+pytesseract
+pdf2image
+numpy
+langchain-community
+faiss-cpu
+PyMuPDF

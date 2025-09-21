@@ -1,4 +1,60 @@
 {
+  "basel_iii_legal_requirements": [
+    {
+      "entity": "Liquidity Coverage Ratio (LCR)",
+      "requirement": "Banks must maintain an LCR ≥ 100%",
+      "legal_basis": "CRR Article 412",
+      "purpose": "Ensure short-term liquidity resilience under stress."
+    },
+    {
+      "entity": "Net Stable Funding Ratio (NSFR)",
+      "requirement": "NSFR must be ≥ 100%",
+      "legal_basis": "CRR Article 428b",
+      "purpose": "Promote long-term funding stability."
+    },
+    {
+      "entity": "Capital Conservation Buffer",
+      "requirement": "Additional 2.5% CET1 capital above minimum",
+      "legal_basis": "CRD IV Article 129",
+      "purpose": "Absorb losses during periods of financial stress."
+    },
+    {
+      "entity": "Countercyclical Buffer",
+      "requirement": "0%–2.5% CET1 capital (variable by jurisdiction)",
+      "legal_basis": "CRD IV Article 130",
+      "purpose": "Mitigate systemic risk during credit booms."
+    },
+    {
+      "entity": "Tier 1 / Tier 2 Capital",
+      "requirement": "Minimum 6% Tier 1, 8% total capital",
+      "legal_basis": "CRR Part Two",
+      "purpose": "Ensure solvency and loss absorption capacity."
+    },
+    {
+      "entity": "Common Equity Tier 1 (CET1)",
+      "requirement": "Minimum 4.5% of RWA",
+      "legal_basis": "CRR Article 92",
+      "purpose": "Provide highest quality capital buffer."
+    },
+    {
+      "entity": "Leverage Ratio",
+      "requirement": "Minimum 3% Tier 1 capital / total exposure",
+      "legal_basis": "CRR Article 429",
+      "purpose": "Limit excessive leverage."
+    },
+    {
+      "entity": "Credit Valuation Adjustment (CVA)",
+      "requirement": "Capital charge for CVA risk on OTC derivatives",
+      "legal_basis": "CRR Article 381",
+      "purpose": "Account for counterparty credit risk."
+    },
+    {
+      "entity": "Risk-Weighted Assets (RWA)",
+      "requirement": "Used to calculate minimum capital requirements",
+      "legal_basis": "CRR Part Three",
+      "purpose": "Align capital with risk exposure."
+    }
+    ],
     "Legal_Regulatory_Terms_NER": [
         {
             "term": "Basel III",
