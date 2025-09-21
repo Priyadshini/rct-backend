@@ -4,7 +4,8 @@ from typing import Optional
 
 from fastapi import APIRouter, UploadFile, File
 from dotenv import load_dotenv
-
+from fastapi import BackgroundTasks
+from PyPDF2 import PdfReader
 from src.utils.helper import save_file
 from src.database.db_repository import (
     DocumentRepository,
@@ -19,6 +20,7 @@ from src.services.rct.ner_service import run_ner_on_document
 
 load_dotenv()
 
+progress_tracker = {}
 router = APIRouter(prefix="/rct")
 UPLOAD_DIR = "resources/data"
 
@@ -83,27 +85,54 @@ def get_documents(doc_id: Optional[int] = None):
 
 # ---------------- Requirements ----------------
 @router.post("/requirements/extract/{doc_id}")
-def extract_requirements(doc_id: int):
+def extract_requirements(doc_id: int, background_tasks: BackgroundTasks):
     doc = DocumentRepository.get_document_by_id(doc_id)
     if not doc:
         return {"success": False, "error": "Document not found"}
 
-    # Run NER on document file
-    extracted_reqs = run_ner_on_document(doc.file_path)
-    print(extracted_reqs)
-    for req in extracted_reqs:
-        RequirementRepository.create_requirement(
-            doc_id=doc_id,
-            section_ref=req.get("section_ref"),
-            text=req.get("text"),
-            category=req.get("category", "general"),
-            priority=req.get("priority", "medium"),
-        )
+    # reset progress
+    progress_tracker[doc_id] = 0
+
+    # kick off async background job
+    background_tasks.add_task(process_document_async, doc_id, doc.file_path)
+
+    return {"success": True, "message": "Extraction started. Poll /rct/requirements/progress/{doc_id}."}
+
+
+def process_document_async(doc_id: int, file_path: str):
+    reader = PdfReader(file_path)
+    total_pages = len(reader.pages)
+
+    for i, page in enumerate(reader.pages, start=1):
+        text = page.extract_text() or ""
+        # run lightweight NER
+        results = run_ner_on_document(text, fast_mode=True)
+
+        for r in results:
+            RequirementRepository.create_requirement(
+                doc_id=doc_id,
+                section_ref=r.get("section_ref"),
+                text=r.get("text"),
+                category=r.get("category"),
+                priority=r.get("priority"),
+            )
+
+        # update progress
+        progress_tracker[doc_id] = int((i / total_pages) * 100)
 
     AuditLogRepository.create_audit_log(action=f"Extracted requirements for doc {doc_id}")
+    progress_tracker[doc_id] = 100  # done
 
-    return {"success": True, "count": len(extracted_reqs)}
 
+@router.get("/requirements/progress/{doc_id}")
+def get_extraction_progress(doc_id: int):
+    progress = progress_tracker.get(doc_id, None)
+    if progress is None:
+        return {"status": "not_started"}
+    elif progress < 100:
+        return {"status": "in_progress", "progress": progress}
+    else:
+        return {"status": "completed", "progress": 100}
 
 @router.get("/requirements/{doc_id}")
 def get_requirements(doc_id: int):
