@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from typing import Optional
-
+from fastapi.responses import FileResponse
 from fastapi import APIRouter, UploadFile, File
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks
@@ -15,8 +15,8 @@ from src.database.db_repository import (
     AuditLogRepository,
 )
 from src.services.rct.ner_service import run_ner_on_document
-#from src.services.llm_service import generate_user_stories_from_requirements
-#from src.services.report_service import generate_report_file
+from src.services.rct.llm_service import generate_user_stories_from_requirements
+from src.services.rct.report_service import generate_report_file
 
 load_dotenv()
 
@@ -158,16 +158,17 @@ def generate_userstories(doc_id: int):
     requirements = RequirementRepository.get_requirements_by_doc(doc_id)
     if not requirements:
         return {"success": False, "error": "No requirements found"}
+    
+    UserStoryRepository.delete_user_stories_by_doc(doc_id)
 
     generated = []
     for r in requirements:
-        #story_text, ac_text = generate_user_stories_from_requirements(r.text)
-        story_text, ac_text = "",""
+        response = generate_user_stories_from_requirements(r.text)
         story_id = UserStoryRepository.create_user_story(
             doc_id=doc_id,
             requirement_id=r.requirement_id,
-            user_story_text=story_text,
-            acceptance_criteria=ac_text,
+            user_story_text=response.get("User Story", ""),
+            acceptance_criteria=response.get("Acceptance Criteria", "")
         )
         generated.append(story_id)
 
@@ -204,8 +205,7 @@ def generate_report(doc_id: int):
     if not stories:
         return {"success": False, "error": "No user stories available"}
 
-    #file_path, report_type = generate_report_file(doc, stories)
-    file_path, report_type = "",""
+    file_path, report_type = generate_report_file(doc, stories)
 
     report_id = ReportRepository.create_report(
         doc_id=doc_id,
@@ -225,7 +225,7 @@ def download_report(report_id: int, format: str):
         return {"error": "Report not found"}
 
     # Normally, return FileResponse(report.file_path) for real download
-    return {"report_id": report.report_id, "file_path": report.file_path, "format": format}
+    return FileResponse(report.file_path)
 
 
 @router.get("/audit/logs")

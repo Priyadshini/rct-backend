@@ -14,7 +14,7 @@ class Document(Base):
     doc_id = Column(Integer, primary_key=True, autoincrement=True)
     doc_name = Column(String(255), nullable=False)
     doc_type = Column(String(50), nullable=False)
-    upload_date = Column(DateTime, default=datetime.utcnow)
+    upload_date = Column(DateTime, default=datetime.now())
     status = Column(String(50), default="uploaded")
     file_path = Column(String(500), nullable=False)
 
@@ -27,7 +27,7 @@ class ComplianceRequirement(Base):
     text = Column(String, nullable=False)
     category = Column(String(50), nullable=True)
     priority = Column(String(20), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now())
 
 
 class UserStory(Base):
@@ -37,7 +37,7 @@ class UserStory(Base):
     requirement_id = Column(Integer, ForeignKey("compliance_requirements.requirement_id"), nullable=False)
     user_story_text = Column(String, nullable=False)
     acceptance_criteria = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now())
 
 
 class Report(Base):
@@ -45,7 +45,7 @@ class Report(Base):
     report_id = Column(Integer, primary_key=True, autoincrement=True)
     doc_id = Column(Integer, ForeignKey("documents.doc_id"), nullable=False)
     report_type = Column(String(50), nullable=False)
-    generated_at = Column(DateTime, default=datetime.utcnow)
+    generated_at = Column(DateTime, default=datetime.now())
     file_path = Column(String(500), nullable=False)
 
 
@@ -53,7 +53,7 @@ class AuditLog(Base):
     __tablename__ = "audit_logs"
     log_id = Column(Integer, primary_key=True, autoincrement=True)
     action = Column(String(100), nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=datetime.now())
 
 # ------------------ REPOSITORIES ------------------
 
@@ -97,7 +97,7 @@ class RequirementRepository:
 
     @staticmethod
     def get_requirements_by_doc(doc_id: int) -> List[ComplianceRequirement]:
-        return db.query(ComplianceRequirement).filter(ComplianceRequirement.doc_id == doc_id).all()
+        return db.query(ComplianceRequirement).filter(ComplianceRequirement.doc_id == doc_id).limit(50).all()
 
 
 class UserStoryRepository:
@@ -118,6 +118,10 @@ class UserStoryRepository:
     def get_user_stories_by_doc(doc_id: int) -> List[UserStory]:
         return db.query(UserStory).filter(UserStory.doc_id == doc_id).all()
 
+    @staticmethod
+    def delete_user_stories_by_doc(doc_id: int):
+        db.query(UserStory).filter(UserStory.doc_id == doc_id).delete()
+        db.commit()
 
 class ReportRepository:
     @staticmethod
