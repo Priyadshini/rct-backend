@@ -16,7 +16,7 @@ from src.database.db_repository import (
 )
 from src.services.rct.ner_service import run_ner_on_document
 from src.services.rct.llm_service import generate_user_stories_from_requirements
-from src.services.rct.report_service import generate_report_file
+from src.services.rct.report_service import generate_report_file, download_report_file
 
 load_dotenv()
 
@@ -164,11 +164,19 @@ def generate_userstories(doc_id: int):
     generated = []
     for r in requirements:
         response = generate_user_stories_from_requirements(r.text)
+        # story_id = UserStoryRepository.create_user_story(
+        #     doc_id=doc_id,
+        #     requirement_id=r.requirement_id,
+        #     user_story_text=response.get("user_story", "US"),
+        #     acceptance_criteria=response.get("acceptance_criteria", "AC"),
+        #     test_case=response.get("test_case", "testt")
+        # )
         story_id = UserStoryRepository.create_user_story(
             doc_id=doc_id,
             requirement_id=r.requirement_id,
-            user_story_text=response.get("User Story", ""),
-            acceptance_criteria=response.get("Acceptance Criteria", "")
+            user_story_text="US",
+            acceptance_criteria="AC",
+            test_case="testt"
         )
         generated.append(story_id)
 
@@ -202,6 +210,7 @@ def generate_report(doc_id: int):
         return {"success": False, "error": "Document not found"}
 
     stories = UserStoryRepository.get_user_stories_by_doc(doc_id)
+    print(stories)
     if not stories:
         return {"success": False, "error": "No user stories available"}
 
@@ -223,9 +232,7 @@ def download_report(report_id: int, format: str):
     report = ReportRepository.get_report(report_id)
     if not report:
         return {"error": "Report not found"}
-
-    # Normally, return FileResponse(report.file_path) for real download
-    return FileResponse(report.file_path)
+    return FileResponse(download_report_file(report, format), media_type="application/octet-stream", filename=f"report_{report_id}.{format}")
 
 
 @router.get("/audit/logs")

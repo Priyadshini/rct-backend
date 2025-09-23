@@ -37,6 +37,7 @@ class UserStory(Base):
     requirement_id = Column(Integer, ForeignKey("compliance_requirements.requirement_id"), nullable=False)
     user_story_text = Column(String, nullable=False)
     acceptance_criteria = Column(String, nullable=True)
+    test_case = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now())
 
 
@@ -97,17 +98,18 @@ class RequirementRepository:
 
     @staticmethod
     def get_requirements_by_doc(doc_id: int) -> List[ComplianceRequirement]:
-        return db.query(ComplianceRequirement).filter(ComplianceRequirement.doc_id == doc_id).limit(50).all()
+        return db.query(ComplianceRequirement).filter(ComplianceRequirement.doc_id == doc_id).limit(5).all()
 
 
 class UserStoryRepository:
     @staticmethod
-    def create_user_story(doc_id, requirement_id, user_story_text, acceptance_criteria):
+    def create_user_story(doc_id, requirement_id, user_story_text, acceptance_criteria, test_case):
         story = UserStory(
             doc_id=doc_id,
             requirement_id=requirement_id,
             user_story_text=user_story_text,
             acceptance_criteria=acceptance_criteria,
+            test_case=test_case
         )
         db.add(story)
         db.commit()

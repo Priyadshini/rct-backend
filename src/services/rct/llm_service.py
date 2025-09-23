@@ -15,7 +15,7 @@ prompt_template = '''
     '''
 
 
-def initialize_llm(api_key: str = "AIzaSyClu2xtk71bOFR85BLhoaSXsVA7jz-TmKQ", model_name: str = 'gemini-1.5-flash'):
+def initialize_llm(api_key: str = "AIzaSyBGYvYRXvim2BPQRBWgIbiQ67F86NDDzoU", model_name: str = 'gemini-1.5-flash'):
     genai.configure(api_key=api_key)
     llm_model = genai.GenerativeModel(model_name)
     return llm_model
@@ -53,15 +53,12 @@ def structure_user_story_response(response_text: str) -> Dict[str, str]:
     for line in response_text.splitlines():
         line = line.strip()
         if line.startswith(user_story_header):
-            current_section = "User Story"
             # Extract content after the header, stripping any leading/trailing whitespace
-            sections[current_section] = line[len(user_story_header):].strip()
+            sections["user_story"] = line[len(user_story_header):].strip()
         elif line.startswith(acceptance_criteria_header):
-            current_section = "Acceptance Criteria"
-            sections[current_section] = line[len(acceptance_criteria_header):].strip()
+            sections["acceptance_criteria"] = line[len(acceptance_criteria_header):].strip()
         elif line.startswith(test_case_header):
-            current_section = "Test Case"
-            sections[current_section] = line[len(test_case_header):].strip()
+            sections["test_case"] = line[len(test_case_header):].strip()
 
     return sections
 
