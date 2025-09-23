@@ -15,26 +15,23 @@ prompt_template = '''
     '''
 
 
-def initialize_llm(api_key: str = "AIzaSyBGYvYRXvim2BPQRBWgIbiQ67F86NDDzoU", model_name: str = 'gemini-1.5-flash'):
+def initialize_llm(api_key: str, model_name: str = 'gemini-1.5-flash'):
     genai.configure(api_key=api_key)
     llm_model = genai.GenerativeModel(model_name)
     return llm_model
 
 
-def generate_user_stories_from_requirements(requirement_text: str):
+def generate_user_stories_from_requirements(requirement_text: str,  api_key: str):
     """
     Yes so now for the document the requirements table will have NERs 
     so what we need to do is take an individua NER insert into prompt and 
     create the User story and AC
     """
-    llm = initialize_llm()
+    llm = initialize_llm(api_key)
     prompt_text = prompt_template.replace("{{text}}", requirement_text)
     try:
-        response = llm.generate_content(prompt_text)
-        print("\n\n*********** RESPONSE ***********\n")
-        
+        response = llm.generate_content(prompt_text)        
         original_response = getattr(response, "text", str(response))
-        # print(original_response)
         structured_response = structure_user_story_response(original_response)
         return structured_response
     except Exception as e:
@@ -42,8 +39,11 @@ def generate_user_stories_from_requirements(requirement_text: str):
     
 
 def structure_user_story_response(response_text: str) -> Dict[str, str]:
-    sections = {"User Story": "", "Acceptance Criteria": "", "Test Case": ""}
-    current_section = None
+    sections = {
+        "user_story": "",
+        "acceptance_criteria": "",
+        "test_case": ""
+    }
 
     # Define the expected bolded headers from the LLM's response
     user_story_header = "**User Story:**"
