@@ -23,6 +23,8 @@ load_dotenv()
 progress_tracker = {}
 router = APIRouter(prefix="/rct")
 UPLOAD_DIR = "resources/data"
+REPORT_DIR = "reports"
+API_TOKEN="AIzaSyBGYvYRXvim2BPQRBWgIbiQ67F86NDDzoU"
 
 
 # ---------------- Health ----------------
@@ -163,20 +165,13 @@ def generate_userstories(doc_id: int):
 
     generated = []
     for r in requirements:
-        response = generate_user_stories_from_requirements(r.text)
-        # story_id = UserStoryRepository.create_user_story(
-        #     doc_id=doc_id,
-        #     requirement_id=r.requirement_id,
-        #     user_story_text=response.get("user_story", "US"),
-        #     acceptance_criteria=response.get("acceptance_criteria", "AC"),
-        #     test_case=response.get("test_case", "testt")
-        # )
+        response = generate_user_stories_from_requirements(r.text, API_TOKEN)
         story_id = UserStoryRepository.create_user_story(
             doc_id=doc_id,
             requirement_id=r.requirement_id,
-            user_story_text="US",
-            acceptance_criteria="AC",
-            test_case="testt"
+            user_story_text=response.get("user_story", "US"),
+            acceptance_criteria=response.get("acceptance_criteria", "AC"),
+            test_case=response.get("test_case", "testt")
         )
         generated.append(story_id)
 
@@ -214,7 +209,7 @@ def generate_report(doc_id: int):
     if not stories:
         return {"success": False, "error": "No user stories available"}
 
-    file_path, report_type = generate_report_file(doc, stories)
+    file_path, report_type = generate_report_file(doc, stories, REPORT_DIR)
 
     report_id = ReportRepository.create_report(
         doc_id=doc_id,
