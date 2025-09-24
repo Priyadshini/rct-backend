@@ -170,8 +170,12 @@ def generate_userstories(doc_id: int):
             doc_id=doc_id,
             requirement_id=r.requirement_id,
             user_story_text=response.get("user_story", "US"),
-            acceptance_criteria=response.get("acceptance_criteria", "AC"),
-            test_case=response.get("test_case", "testt")
+            acceptance_criteria=(
+                "\n".join(response.get("acceptance_criteria", []))
+                if isinstance(response.get("acceptance_criteria"), list)
+                else response.get("acceptance_criteria", "AC")
+            ),
+            test_case=response.get("test_case", "TC")
         )
         generated.append(story_id)
 
